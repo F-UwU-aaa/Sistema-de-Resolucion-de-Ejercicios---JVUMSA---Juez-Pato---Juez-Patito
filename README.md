@@ -49,5 +49,5 @@ y copias ese enlace todo completo y eso es todo
 
 ## ERRORES
 
-Si te algun error al ejecutar el programa copiar y error y preguntacelo a tu profesor XD mejor manda abre un hilo en aca y yo te respondo "F :3"
+Si te algun error al ejecutar el programa copiar y error y preguntacelo a tu profesor XD mejor manda abre un hilo en aca y yo te respondo pero intenta ejecutar 3 veces talvez fue error de alguna pagina y no del codigo  "F :3"
 
