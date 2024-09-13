@@ -24,10 +24,10 @@ El que me ayudo fue `ㅤㅤㅤㅤ`  Xd
 YA DEVES TENER PYTHON y CHOME INSTALADO y si ya tienes solo ejecutas el archivo 
 `Instalador_de_librerias.bat` que va a instalar: 
 ```bash
-pip show selenium
-pip show webdriver-manager
-pip show pyperclip
-pip show pandas
+pip install selenium
+pip install webdriver-manager
+pip install pyperclip
+pip install pandas
 ```
 ## CONFIGURACIONES ANTES DE HACER COORER EL CODIGO
 
