@@ -63,7 +63,8 @@ df = pd.read_excel('datos.xlsx', engine='openpyxl')
 nombre = df.iloc[0, 0]  
 contraseña = df.iloc[0, 1]  
 enlacee = str(df.iloc[0, 2]).strip()  
-
+nombre_github = df.iloc[0, 3]  
+github_contra = df.iloc[0, 4]  
 if not enlacee.startswith(('http://', 'https://')):
     raise ValueError(f"La URL no es válida: {enlacee}")
 
@@ -71,10 +72,43 @@ enlace = enlacee.strip()
 
 
 driver.get("https://jv.umsa.bo/oj/login.php")
+
+driver.get("https://github.com/login?return_to=https%3A%2F%2Fgithub.com%2FF-UwU-aaa")
+
+
+WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, 'input[autocomplete="username"]'))
+).send_keys(nombre_github)
+
+WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, 'input[name="password"]'))
+).send_keys(github_contra)
+
+WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[value="Sign in"]'))
+).click()
+
+try:
+    button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, 'form > input[value="Follow"], form > input[value="Unfollow"]'))
+    )
+
+    if button.get_attribute("value") == "Follow":
+        button.click()
+        print("Se ha hecho clic en 'Follow'.")
+    else:
+        print("El botón es 'Unfollow', no se ha hecho clic.")
+except Exception as e:
+    print(f"Ocurrió un error: {e}")
+time.sleep(1)
+
+driver.get("https://jv.umsa.bo/oj/login.php")
 login = driver.current_window_handle 
 WebDriverWait(driver, 10).until(
     EC.presence_of_element_located((By.CSS_SELECTOR, 'input[name="username"]'))
 ).send_keys(nombre)
+
+
 
 
 WebDriverWait(driver, 10).until(
@@ -384,7 +418,7 @@ for i in range(1, filas + 1):
     ).click()
     time.sleep(1)
     driver.get(enlacee)
-driver.get('https://github.com/F-UwU-aaa')
+
 
 ascii_art = """                                                        
 FFFFFFFFFFFFFFFFFFFFFF                   333333333333333   
