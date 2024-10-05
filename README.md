@@ -3,6 +3,9 @@
 
 Es un bot de automatizacion para resolver los concursos del juez pato :3 con el fin de 
 
+# Video tutorial de instalacion
+- https://youtu.be/gT2MRqeVCVU?si=FQAzdc-33sfVqaNa
+
 ## AUTOR
 - [@F :3 ](https://github.com/F-UwU-aaa)
 ## TECNOLOGIAS y BIBLIOTECAS USADAS
