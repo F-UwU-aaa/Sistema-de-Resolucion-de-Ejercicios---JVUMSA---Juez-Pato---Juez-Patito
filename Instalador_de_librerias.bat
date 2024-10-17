@@ -11,5 +11,11 @@ pip install pyperclip
 echo Installing Pandas...
 pip install pandas
 
-echo All installations are complete!
-pause
+echo Installing openpyxl...
+pip install openpyxl
+
+echo Installing beautifulsoup4...
+pip install beautifulsoup4
+
+
+

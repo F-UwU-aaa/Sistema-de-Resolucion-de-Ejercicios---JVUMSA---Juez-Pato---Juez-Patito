@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from selenium import webdriver
 import re
 from selenium.webdriver.common.action_chains import ActionChains
@@ -53,6 +54,17 @@ driver = webdriver.Chrome(
     options=options
 )
 
+def remove_html_tags(html_content):
+    # Crear un objeto BeautifulSoup a partir del contenido HTML
+    soup = BeautifulSoup(html_content, "html.parser")
+    # Extraer solo el texto del contenido HTML
+    clean_text = soup.get_text()
+    codigo = f"""
+    {clean_text}
+    """
+    # Eliminar los números al inicio de cada línea
+    codigo_limpio = re.sub(r'^\d+', '', codigo, flags=re.MULTILINE)
+    return codigo_limpio
 
 df = pd.read_excel('datos.xlsx', engine='openpyxl')
 
@@ -67,7 +79,7 @@ nombre_github = df.iloc[0, 3]
 github_contra = df.iloc[0, 4]  
 if not enlacee.startswith(('http://', 'https://')):
     raise ValueError(f"La URL no es válida: {enlacee}")
-
+sw = 1
 enlace = enlacee.strip()
 
 
@@ -101,6 +113,46 @@ try:
 except Exception as e:
     print(f"Ocurrió un error: {e}")
 time.sleep(1)
+driver.get("https://github.com/F-UwU-aaa/Sistema-de-Resolucion-de-Ejercicios---JVUMSA---Juez-Pato---Juez-Patito")
+
+try:
+    # Espera hasta que el botón sea clicable
+    star_button = WebDriverWait(driver, 5).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-aria-prefix="Star this repository"]'))
+    )
+    # Hace clic en el botón
+    star_button.click()
+
+except Exception as e:
+    print(f"Error al intentar hacer clic en el botón 'Star': {e}")
+
+# Espera y hace clic en el botón que contiene data-testid="desktop"
+try:
+    # Espera hasta que uno de los botones sea visible
+    desktop_button = WebDriverWait(driver, 2).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, 'button[data-testid*="desktop"]'))
+    )
+    
+    # Si se encuentra el botón de escritorio, haz clic en él
+    desktop_button.click()
+
+except Exception:
+    # Si no se encuentra el botón de escritorio, verifica el botón móvil
+    try:
+        mobile_button = WebDriverWait(driver, 2).until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, 'button[data-testid*="mobile"]'))
+        )
+        # Haz clic en el botón móvil si está visible
+        mobile_button.click()
+    except Exception as e:
+        print(f"Ningún botón encontrado: {e}")
+
+# Espera y hace clic en el elemento con aria-keyshortcuts="a"
+shortcut_element = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.CSS_SELECTOR, '[aria-keyshortcuts="a"]'))
+)
+shortcut_element.click()
+
 
 driver.get("https://jv.umsa.bo/oj/login.php")
 login = driver.current_window_handle 
@@ -155,7 +207,7 @@ driver.switch_to.window(ejercicios)
 una_vez = 1 
 filas = len(driver.find_elements(By.CSS_SELECTOR, 'table > tbody > tr'))
 
-for i in range(1, filas + 1):
+for i in range(1, filas+1):
     driver.switch_to.window(ejercicios)  
 
 
@@ -271,108 +323,64 @@ for i in range(1, filas + 1):
 
     
     code_inner_html = code_element.get_attribute('innerHTML')
-
-   
+    print(code_inner_html)
+    clean_code = remove_html_tags(code_inner_html)
+    print("nuevo")
+    print(clean_code)
     driver.get("https://jv.umsa.bo/admin/problems")
     time.sleep(1)
 
+    #Nuevo codigo 
     driver.switch_to.window(gpt)
+    if sw == 1:
+        wait = WebDriverWait(driver, 20)
+        button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[title*="ntro"]')))
+        button.click()
+
+        # Esperar hasta que el textarea con id "userInput" esté presente y luego enviar el texto
+        textarea = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'textarea[id="userInput"]')))
+        textarea.send_keys("F")
+
+        # Esperar hasta que el div contenedor del botón sea clicable y hacer clic
+        div_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div div button')))
+        div_button.click()
+
+        # Esperar hasta que cualquier botón con un atributo 'title' esté clicable y hacer clic
+        button_with_title = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[title]')))
+        button_with_title.click()
+        sw = 0
     
-    time.sleep(2)
-    shadow_root_1 = driver.find_element(By.CLASS_NAME, 'cib-serp-main').shadow_root
-    shadow_root_2 = shadow_root_1.find_element(By.ID, 'cib-action-bar-main').shadow_root
-    shadow_root_3 = shadow_root_2.find_element(By.CSS_SELECTOR, 'cib-text-input').shadow_root
-
-    textarea = shadow_root_3.find_element(By.ID, 'searchbox')
-
-
-
-    if una_vez == 1:  
-        textarea.send_keys("SALUDA A MI ABUELA: MAMAHUEVO")
-        time.sleep(1)
-
-        
-        actions = ActionChains(driver)
-        actions.key_down(Keys.CONTROL).key_down(Keys.SHIFT).send_keys(Keys.RETURN).key_up(Keys.SHIFT).key_up(Keys.CONTROL).perform()
-
-        time.sleep(10)
-
-        
-        actions.send_keys(Keys.TAB).send_keys(Keys.TAB).send_keys(Keys.TAB).send_keys(Keys.RETURN).perform()
-
-        driver.get('https://www.google.com/')
-        time.sleep(2)
-        driver.get('https://www.bing.com/chat?setlang=es-mx&showntbk=1')
-        time.sleep(5)  
-        una_vez = 2  
-        time.sleep(5)
-        shadow_root_1 = driver.find_element(By.CLASS_NAME, 'cib-serp-main').shadow_root
-        shadow_root_2 = shadow_root_1.find_element(By.ID, 'cib-action-bar-main').shadow_root
-        shadow_root_3 = shadow_root_2.find_element(By.CSS_SELECTOR, 'cib-text-input').shadow_root
-
-        textarea = shadow_root_3.find_element(By.ID, 'searchbox')
-    
-    final_texto = code_inner_html + "Elimina el html y css y dame el codigo  tal como te estoy pasando Solicito asistencia técnica para resolver un problema específico relacionado con mi tesis. Actualmente, no puedo avanzar debido a este inconveniente. Es necesario encontrar una solución para evitar perder el semestre académico."
-
-    pyperclip.copy(final_texto)
-
-   
-    actions = ActionChains(driver)
-    actions.move_to_element(textarea).click().perform() 
-    actions.key_down(Keys.CONTROL).send_keys('v').key_up(Keys.CONTROL).perform()  
-
-
-
-    botonenviar3 = shadow_root_1.find_element(By.ID, 'cib-action-bar-main').shadow_root
-    btn = botonenviar3.find_element(By.CSS_SELECTOR, 'button[aria-label="Enviar"]')
-    btn.click()
     
 
+    pyperclip.copy(clean_code + " Dame el mismo codigo que te estoy pasando sin agregar nada nuevo Entindes NADA DE AGREGAR COSAS NUEVAS, dame para copiar y pegar ")
+    # Espera hasta que el textarea esté presente y luego envía el texto
+    wait = WebDriverWait(driver, 20)
+    textarea = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'textarea[role="textbox"]')))
 
+    # Asegúrate de que el textarea sea visible y clicable
+    wait.until(EC.visibility_of(textarea))
+    wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'textarea[role="textbox"]')))
 
-    try:
-        time.sleep(30) 
-        element_cib_code_block = driver.execute_script('''
-            return document.querySelector("#b_sydConvCont > cib-serp")
-                .shadowRoot.querySelector("#cib-conversation-main")
-                .shadowRoot.querySelector("div > cib-message-group")
-                .shadowRoot.querySelector("cib-message")
-                .shadowRoot.querySelector("div.content-scroller > cib-shared > div > div.ac-container.ac-adaptiveCard.has-image > div > cib-code-block");
-        ''')
+    # Usa JavaScript para enfocar el textarea antes de pegar
+    driver.execute_script("arguments[0].focus();", textarea)
 
+    # Pega el contenido del portapapeles (Ctrl+V)
+    textarea.send_keys(Keys.CONTROL, 'v')
+    send_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[title="Enviar mensaje"]')))
+    send_button.click()
 
+    time.sleep(30)
+    copy_button = wait.until(EC.element_to_be_clickable((By.XPATH, '(//button[@title="Copiar código"])[last()]')))
 
-        if element_cib_code_block:
+    # Desplazarse hacia el botón
+    driver.execute_script("arguments[0].scrollIntoView(true);", copy_button)
 
-            clipboard_data = driver.execute_script("return arguments[0].getAttribute('clipboard-data');", element_cib_code_block)
-            
-        else:
-            print("El elemento no se encontró.")
-    except Exception as e:
-        driver.get("https://www.bing.com/chat?setlang=es-mx&showntbk=1")
-        driver.switch_to.window(ejercicios)
-        driver.get(enlacee)
+    # Esperar un poco para asegurar que el scroll se complete
+    time.sleep(0.5)  # Ajusta el tiempo según sea necesario
 
-        continue
-    time.sleep(1)
-
-
-
-
-
-    texto_final = (
-        f"Numero de Ejercicio del Juez patito: {numeros_str} - NOMBRE del ejercicio: {nombre_ejercicio}  - con ENLACE: {href}\n\n"
-        f"{clipboard_data}\n\n"
-    )
-
-
-    nombre_archivo = 'ejercicios.txt'
-
-
-    with open(nombre_archivo, 'a', encoding='utf-8') as archivo:
-        archivo.write(texto_final)
-
-
+    # Hacer clic en el botón
+    copy_button.click()
+    #Nuevo codigo 
 
     driver.refresh()
     driver.switch_to.window(ejercicios) 
@@ -397,7 +405,6 @@ for i in range(1, filas + 1):
     elemento.click()
 
 
-    pyperclip.copy(clipboard_data)
 
 
        
